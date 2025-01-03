@@ -1,6 +1,34 @@
-﻿Release new version:
+﻿# cslox
+cslox, a C# Lox implementation
+
+## Installation
+To install the tool, run the following command:
+```bash
+dotnet pack
+dotnet tool install -g  --add-source ./nupkg cslox
+```
+
+## ﻿Updating the package
 
 In the project folder:
-in `cslox.csproj` file, update version number
-run `dotnet pack` to create a new package
-run `dotnet tool update -g --add-source ./nupkg cslox` to update the global tool
+
+In `cslox.csproj` file, update version number.
+
+To update the package, run the following command:
+```bash
+dotnet pack
+dotnet tool update -g --add-source ./nupkg cslox
+```
+
+## Usage
+After installing the version globally you can use it anywhere in a command line.
+
+To run an interactive shell, run the following command:
+```bash
+cslox
+```
+
+To run a script file, run the following command:
+```bash
+cslox <script>
+```
