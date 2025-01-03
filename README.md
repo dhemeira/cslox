@@ -1,5 +1,5 @@
 ﻿# cslox
-cslox, a C# Lox implementation
+cslox, a C# Lox implementation from the book [Crafting Interpreters](https://craftinginterpreters.com/).
 
 ## Installation
 To install the tool, run the following command:
