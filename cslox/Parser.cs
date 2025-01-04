@@ -37,11 +37,11 @@
             }
         }
 
-        private Stmt VarDeclaration()
+        private Stmt.Var VarDeclaration()
         {
             Token name = Consume(TokenType.IDENTIFIER, "Expect variable name.");
 
-            Expr initializer = null;
+            Expr? initializer = null;
             if (Match(TokenType.EQUAL))
                 initializer = Expression();
 

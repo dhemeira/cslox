@@ -60,9 +60,9 @@ namespace cslox
         public class Var : Stmt
         {
             public readonly Token name;
-            public readonly Expr initializer;
+            public readonly Expr? initializer;
 
-            public Var(Token name, Expr initializer)
+            public Var(Token name, Expr? initializer)
             {
                 this.name = name;
                 this.initializer = initializer;

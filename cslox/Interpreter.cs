@@ -26,7 +26,7 @@ namespace cslox
             stmt.Accept(this);
         }
 
-        private string Stringify(object value)
+        private static string Stringify(object value)
         {
             if (value == null) return "nil";
             if (value is double d)
@@ -84,7 +84,7 @@ namespace cslox
             return null;
         }
 
-        private bool IsEqual(object a, object b)
+        private static bool IsEqual(object a, object b)
         {
             if (a == null && b == null) return true;
             if (a == null) return false;
@@ -117,19 +117,19 @@ namespace cslox
             return null;
         }
 
-        private void CheckNumberOperand(Token op, object operand)
+        private static void CheckNumberOperand(Token op, object operand)
         {
             if (operand is double) return;
             throw new RuntimeError(op, "Operand must be a number.");
         }
 
-        private void CheckNumberOperand(Token op, object left, object right)
+        private static void CheckNumberOperand(Token op, object left, object right)
         {
             if (left is double && right is double) return;
             throw new RuntimeError(op, "Operands must be numbers.");
         }
 
-        private bool IsTruthy(object @object)
+        private static bool IsTruthy(object @object)
         {
             if (@object == null) return false;
             if (@object is bool b) return b;
@@ -156,7 +156,7 @@ namespace cslox
 
         public Void? VisitVarStmt(Stmt.Var stmt)
         {
-            object value = null;
+            object? value = null;
             if (stmt.initializer != null)
                 value = Evaluate(stmt.initializer);
 
