@@ -141,8 +141,7 @@ namespace cslox
             Advance();
 
             // trim surrounding quotes
-
-            double value = double.Parse(source[start..current]);
+            string value = source[(start+1)..(current-1)];
             AddToken(TokenType.STRING, value);
         }
 
