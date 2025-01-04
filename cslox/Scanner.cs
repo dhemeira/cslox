@@ -141,7 +141,7 @@ namespace cslox
             Advance();
 
             // trim surrounding quotes
-            string value = source[(start+1)..(current-1)];
+            string value = source[(start + 1)..(current - 1)];
             AddToken(TokenType.STRING, value);
         }
 

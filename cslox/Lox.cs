@@ -10,18 +10,24 @@
             if (args.Length > 1)
             {
                 Console.WriteLine("Usage: cslox [script]");
-                Environment.Exit(64);
+                System.Environment.Exit(64);
             }
             else if (args.Length == 1)
-                RunFile(args[0]);
+                if (File.Exists(args[0]))
+                    RunFile(args[0]);
+                else
+                {
+                    Console.WriteLine($"Error: File not found at path '{Path.GetFullPath(args[0])}'");
+                    System.Environment.Exit(66);
+                }
             else
                 RunPrompt();
         }
 
         private static void RunFile(string path)
         {
-            if (hadError) Environment.Exit(65);
-            if (hadRuntimeError) Environment.Exit(70);
+            if (hadError) System.Environment.Exit(65);
+            if (hadRuntimeError) System.Environment.Exit(70);
 
             string source = File.ReadAllText(path);
             Run(source);
@@ -49,11 +55,11 @@
             List<Token> tokens = scanner.ScanTokens();
 
             Parser parser = new Parser(tokens);
-            Expr expr = parser.Parse();
+            List<Stmt> statements = parser.Parse();
 
             if (hadError) return;
 
-            interpreter.Interpret(expr);
+            interpreter.Interpret(statements);
         }
 
         public static void Error(int line, string message)

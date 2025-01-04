@@ -1,25 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
 namespace cslox
 {
-    class Interpreter : IVisitor<object>
+    struct Void { }
+    class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void?>
     {
-        public void Interpret(Expr expression)
+        private Environment environment = new Environment();
+        public void Interpret(List<Stmt> statements)
         {
             try
             {
-                object value = Evaluate(expression);
-                Console.WriteLine(Stringify(value));
+                foreach (Stmt stmt in statements)
+                {
+                    Execute(stmt);
+                }
             }
             catch (RuntimeError error)
             {
                 Lox.RuntimeError(error);
             }
+        }
+
+        private void Execute(Stmt stmt)
+        {
+            stmt.Accept(this);
         }
 
         private string Stringify(object value)
@@ -36,7 +40,7 @@ namespace cslox
             return value.ToString();
         }
 
-        public object VisitBinaryExpr(Binary expr)
+        public object VisitBinaryExpr(Expr.Binary expr)
         {
             object left = Evaluate(expr.left);
             object right = Evaluate(expr.right);
@@ -87,17 +91,17 @@ namespace cslox
             return a.Equals(b);
         }
 
-        public object VisitGroupingExpr(Grouping expr)
+        public object VisitGroupingExpr(Expr.Grouping expr)
         {
             return Evaluate(expr.expression);
         }
 
-        public object VisitLiteralExpr(Literal expr)
+        public object VisitLiteralExpr(Expr.Literal expr)
         {
             return expr.value;
         }
 
-        public object VisitUnaryExpr(Unary expr)
+        public object VisitUnaryExpr(Expr.Unary expr)
         {
             object right = Evaluate(expr.right);
             switch (expr.op.type)
@@ -135,6 +139,65 @@ namespace cslox
         private object Evaluate(Expr expr)
         {
             return expr.Accept(this);
+        }
+
+        public Void? VisitExpressionStmt(Stmt.Expression stmt)
+        {
+            Evaluate(stmt.expression);
+            return null;
+        }
+
+        public Void? VisitPrintStmt(Stmt.Print stmt)
+        {
+            object value = Evaluate(stmt.expression);
+            Console.WriteLine(Stringify(value));
+            return null;
+        }
+
+        public Void? VisitVarStmt(Stmt.Var stmt)
+        {
+            object value = null;
+            if (stmt.initializer != null)
+                value = Evaluate(stmt.initializer);
+
+            environment.Define(stmt.name.lexeme, value);
+            return null;
+        }
+
+        public object VisitVariableExpr(Expr.Variable expr)
+        {
+            return environment.Get(expr.name);
+        }
+
+        public object VisitAssignExpr(Expr.Assign expr)
+        {
+            object value = Evaluate(expr.value);
+            environment.Assign(expr.name, value);
+            return value;
+        }
+
+        public Void? VisitBlockStmt(Stmt.Block stmt)
+        {
+            ExecuteBlock(stmt.statements, new Environment(environment));
+            return null;
+        }
+
+        private void ExecuteBlock(List<Stmt> statements, Environment environment)
+        {
+            Environment previous = this.environment;
+            try
+            {
+                this.environment = environment;
+
+                foreach (Stmt statement in statements)
+                {
+                    Execute(statement);
+                }
+            }
+            finally
+            {
+                this.environment = previous;
+            }
         }
     }
 }
